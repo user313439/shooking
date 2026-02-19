@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import './App.css';
 
 const initialProducts = [
-  { id: 1, brand: '브랜드A', desc: '편안하고 착용감이 좋은 신발', price: '35,000원', img: 'https://via.placeholder.com/150/f0f0f0' },
-  { id: 2, brand: '브랜드A', desc: '힙한 컬러가 매력적인 신발', price: '25,000원', img: 'https://via.placeholder.com/150/e0e0f8' },
-  { id: 3, brand: '브랜드B', desc: '편안하고 착용감이 좋은 신발', price: '35,000원', img: 'https://via.placeholder.com/150/d0e8ff' },
-  { id: 4, brand: '브랜드B', desc: '힙한 컬러가 매력적인 신발', price: '35,000원', img: 'https://via.placeholder.com/150/c0ffc0' },
-  { id: 5, brand: '브랜드C', desc: '편안하고 착용감이 좋은 신발', price: '35,000원', img: 'https://via.placeholder.com/150/cccccc' },
-  { id: 6, brand: '브랜드C', desc: '힙한 컬러가 매력적인 신발', price: '35,000원', img: 'https://via.placeholder.com/150/ffcccc' },
+  { id: 1, brand: '브랜드A', desc: '편안하고 착용감이 좋은 신발', price: '35,000원', img: '/images/nike1.jpg' },
+  { id: 2, brand: '브랜드A', desc: '힙한 컬러가 매력적인 신발', price: '25,000원', img: '/images/nike2.jpg' },
+  { id: 3, brand: '브랜드B', desc: '편안하고 착용감이 좋은 신발', price: '35,000원', img: '/images/nike3.jpg' },
+  { id: 4, brand: '브랜드B', desc: '힙한 컬러가 매력적인 신발', price: '35,000원', img: '/images/nike4.jpg' },
+  { id: 5, brand: '브랜드C', desc: '편안하고 착용감이 좋은 신발', price: '35,000원', img: '/images/nike5.jpg' },
+  { id: 6, brand: '브랜드C', desc: '힙한 컬러가 매력적인 신발', price: '35,000원', img: '/images/nike6.jpg' },
 ];
 
 function App() {
@@ -15,11 +15,16 @@ function App() {
   const [addedItems, setAddedItems] = useState([]);
 
   const handleAddToCart = (id) => {
-    if (!addedItems.includes(id)) {
-      setCartCount(cartCount + 1);
-      setAddedItems([...addedItems, id]);
-    }
-  };
+  if (addedItems.includes(id)) {
+    // 이미 담겨 있다면? 리스트에서 제거
+    setCartCount(cartCount - 1);
+    setAddedItems(addedItems.filter(itemId => itemId !== id));
+  } else {
+    // 담겨 있지 않다면? 리스트에 추가
+    setCartCount(cartCount + 1);
+    setAddedItems([...addedItems, id]);
+  }
+};
 
   return (
     <div className="container">
