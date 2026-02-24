@@ -27,3 +27,170 @@
 /* 담기 버튼: 클릭 시 변화 */
 .add-btn { width: 100%; padding: 8px; border: none; border-radius: 20px; background: #000; color: #fff; cursor: pointer; font-size: 12px; }
 .add-btn.active { background: #ccc; color: #666; cursor: default; }
+
+/* 버튼들을 가로로 나란히 배치하기 위한 그룹 */
+.btn-group {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+/* 기존 .add-btn 수정 및 .buy-btn 추가 */
+.add-btn, .buy-btn {
+  flex: 1; /* 버튼 너비를 1:1로 맞춤 */
+  padding: 8px 0;
+  border: none;
+  border-radius: 4px; /* 시안의 약간 각진 버튼 형태 반영 */
+  font-size: 11px;
+  font-weight: bold;
+  cursor: pointer;
+  text-align: center;
+}
+
+/* 구매 버튼: 시안 속 노란색 적용 */
+.buy-btn {
+  background-color: #f8e71c;
+  color: #000;
+}
+
+/* --- 2. 결제 모듈(PaymentForm) 스타일 추가 --- */
+
+/* 결제 화면 컨테이너 */
+.payment-container {
+  padding: 20px;
+  background-color: #fff;
+}
+
+/* 시안 상단 '카드 추가' 헤더 */
+.payment-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* 검은색 카드 미리보기 */
+.card-preview {
+  background-color: #333; /* 시안 속 어두운 카드 배경 */
+  height: 180px;
+  border-radius: 12px;
+  padding: 20px;
+  color: #fff;
+  position: relative;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.card-chip {
+  width: 40px;
+  height: 30px;
+  background-color: #d4af37;
+  border-radius: 4px;
+  margin-bottom: 30px;
+}
+
+/* 시안 속 회색 입력창 */
+.input-group {
+  margin-bottom: 20px;
+}
+
+.input-group label {
+  display: block;
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 5px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  background-color: #f2f2f2; /* 시안의 회색 배경 입력창 */
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+/* --- 결제 페이지 공통 스타일 --- */
+.payment-container { padding: 20px; max-width: 500px; margin: 0 auto; background: #fff; }
+
+.payment-header {
+  display: flex; justify-content: center; align-items: center;
+  position: relative; margin-bottom: 25px; height: 40px;
+}
+.header-title { font-size: 16px; font-weight: bold; margin: 0; }
+
+/* 오른쪽 상단 X 버튼 */
+.close-btn-right {
+  position: absolute; right: 0; background: none; border: none;
+  font-size: 24px; cursor: pointer; color: #000;
+}
+
+/* 카드 크기 및 비율 고정 */
+.card-preview-wrapper { display: flex; justify-content: center; margin-bottom: 30px; }
+.card-preview-ui {
+  width: 100%; max-width: 300px; /* 실제 카드 크기에 가깝게 조절 */
+  aspect-ratio: 1.58 / 1; background: #333; border-radius: 12px;
+  padding: 20px; color: #fff; display: flex; flex-direction: column;
+  justify-content: space-between; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+.card-chip { width: 40px; height: 30px; background: #d4af37; border-radius: 4px; }
+.preview-number { font-size: 18px; letter-spacing: 2px; text-align: center; margin: 15px 0; }
+.preview-bottom { display: flex; justify-content: space-between; font-size: 12px; }
+
+/* 입력창 스타일 (시안 속 회색 배경) */
+.input-group { margin-bottom: 20px; display: flex; flex-direction: column; }
+.input-group label { font-size: 12px; color: #888; margin-bottom: 6px; font-weight: bold; }
+.gray-input {
+  border: none; background: #f2f2f2; padding: 12px; border-radius: 8px;
+  font-size: 14px; outline: none;
+}
+.half-input { width: 100px; }
+.mini-input { width: 60px; text-align: center; }
+
+.input-row { display: flex; gap: 20px; }
+
+/* 비밀번호 박스 */
+.pw-inputs { display: flex; align-items: center; gap: 8px; }
+.pw-box { width: 45px !important; text-align: center; }
+.dot { font-size: 20px; font-weight: bold; }
+
+/* 작성 완료 버튼 (유효성 검사에 따라 변화) */
+.submit-btn {
+  width: 100%; padding: 15px; border-radius: 30px; border: none;
+  background: #ccc; color: #888; font-weight: bold; cursor: not-allowed;
+  margin-top: 20px; transition: 0.3s;
+}
+.submit-btn.active {
+  background: #000; color: #fff; cursor: pointer;
+}
+/* 보유 카드 목록 스타일 */
+.card-list { display: flex; flex-direction: column; gap: 20px; align-items: center; }
+.registered-card-item { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.small-card { max-width: 250px !important; }
+
+/* 카드 추가 빈 박스 */
+.add-card-placeholder {
+  width: 250px; aspect-ratio: 1.58/1; background: #f2f2f2;
+  border-radius: 12px; display: flex; justify-content: center;
+  align-items: center; cursor: pointer; border: 2px dashed #ccc;
+}
+.plus-icon { font-size: 40px; color: #aaa; }
+
+/* 결제 버튼 */
+.pay-now-btn {
+  background: #f8e71c; color: #000; border: none; padding: 10px 20px;
+  border-radius: 20px; font-weight: bold; cursor: pointer;
+}
+
+/* 왼쪽 화살표 버튼 */
+.back-arrow-btn {
+  position: absolute; left: 0; background: none; border: none;
+  font-size: 24px; cursor: pointer;
+}
