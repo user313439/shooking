@@ -1,0 +1,23 @@
+.payment-container { max-width: 400px; margin: 20px auto; padding: 20px; }
+
+/* 카드 미리보기 디자인 */
+.card-preview {
+  background: linear-gradient(135deg, #444, #000);
+  height: 200px; border-radius: 15px; padding: 25px; color: white;
+  display: flex; flex-direction: column; justify-content: space-between;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2); margin-bottom: 30px;
+}
+.card-chip { width: 45px; height: 35px; background: #d4af37; border-radius: 5px; }
+.card-number-display { font-size: 22px; letter-spacing: 2px; }
+.card-bottom-info { display: flex; justify-content: space-between; font-size: 14px; }
+
+/* 입력 창 디자인 */
+.input-group { display: flex; flex-direction: column; margin-bottom: 15px; }
+.input-group label { font-size: 12px; font-weight: bold; margin-bottom: 5px; }
+.input-group input { padding: 12px; border: 1px solid #ddd; border-radius: 8px; }
+.input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.pay-btn {
+  width: 100%; padding: 15px; background: #000; color: #fff;
+  border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px;
+}
