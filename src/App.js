@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './App.css';
 import PaymentForm from './PaymentForm';
+import Cart from './Cart';
 
 const initialProducts = [
   { id: 1, brand: '브랜드A', desc: '편안하고 착용감이 좋은 신발', price: '35,000원', img: '/images/nike1.jpg' },
@@ -14,8 +15,8 @@ const initialProducts = [
 function App() {
   const [cartCount, setCartCount] = useState(0);
   const [addedItems, setAddedItems] = useState([]);
-  const [view, setView] = useState('list'); // list, wallet, addCard 중 하나
-  const [cards, setCards] = useState([]); // 등록된 카드들 저장
+  const [view, setView] = useState('list'); // list, cart, wallet, addCard
+  const [cards, setCards] = useState([]);
 
   const handleAddToCart = (id) => {
     if (addedItems.includes(id)) {
@@ -27,13 +28,23 @@ function App() {
     }
   };
 
-  // 새로운 카드 저장 함수
   const addCard = (newCard) => {
     setCards([...cards, newCard]);
-    setView('wallet'); // 등록 완료 시 보유 카드 창으로 이동
+    setView('wallet');
   };
 
-  // 1. 보유 카드 화면 (Wallet View)
+  // 1. 장바구니 화면 (대소문자 'cart'로 통일)
+  if (view === 'cart') {
+    return (
+      <Cart 
+        cartItems={initialProducts.filter(p => addedItems.includes(p.id))} 
+        onBack={() => setView('list')}
+        onCheckout={() => setView('wallet')} 
+      />
+    );
+  }
+
+  // 2. 보유 카드 화면
   if (view === 'wallet') {
     return (
       <div className="payment-container">
@@ -44,7 +55,7 @@ function App() {
         
         <div className="card-list">
           {cards.length === 0 && (
-          <p className="wallet-notice">새로운 카드를 등록해주세요.</p>
+            <p className="wallet-notice">새로운 카드를 등록해주세요.</p>
           )}
           {cards.map((card, index) => (
             <div key={index} className="registered-card-item">
@@ -61,8 +72,6 @@ function App() {
               </button>
             </div>
           ))}
-
-          {/* 카드 추가 버튼 (빈 카드 모양) */}
           <div className="add-card-placeholder" onClick={() => setView('addCard')}>
             <span className="plus-icon">+</span>
           </div>
@@ -71,27 +80,37 @@ function App() {
     );
   }
 
-  // 2. 카드 등록 화면 (Add Card View)
+  // 3. 카드 등록 화면
   if (view === 'addCard') {
-    return <PaymentForm 
-      onBack={() => setView('wallet')} 
-      onClose={() => setView('list')} 
-      onSave={addCard} 
-    />;
+    return (
+      <PaymentForm 
+        onBack={() => setView('wallet')} 
+        onClose={() => setView('list')} 
+        onSave={addCard} 
+      />
+    );
   }
 
-  // 3. 상품 목록 화면 (List View)
+  // 4. 기본 상품 목록 화면
   return (
     <div className="container">
       <header className="header">
         <div className="header-inner">
-          <div className="cart-icon">🛒 {cartCount > 0 && <span className="badge">{cartCount}</span>}</div>
+          <div 
+            className="cart-icon" 
+            onClick={() => setView('cart')} 
+            style={{ cursor: 'pointer' }}
+          >
+            🛒 {cartCount > 0 && <span className="badge">{cartCount}</span>}
+          </div>
         </div>
       </header>
+      
       <section className="title-section">
         <h2>신발 상품 목록</h2>
         <p>현재 {initialProducts.length}개의 상품이 있습니다.</p>
       </section>
+
       <div className="product-grid">
         {initialProducts.map((product) => (
           <div key={product.id} className="product-card">
@@ -101,10 +120,23 @@ function App() {
               <p className="desc">{product.desc}</p>
               <span className="price">{product.price}</span>
               <div className="btn-group">
-                <button className={`add-btn ${addedItems.includes(product.id) ? 'active' : ''}`} onClick={() => handleAddToCart(product.id)}>
+                <button 
+                  className={`add-btn ${addedItems.includes(product.id) ? 'active' : ''}`} 
+                  onClick={() => handleAddToCart(product.id)}
+                >
                   {addedItems.includes(product.id) ? '담김!' : '담기'}
                 </button>
-                <button className="buy-btn" onClick={() => setView('wallet')}>구매</button>
+                <button 
+                  className="buy-btn" 
+                  onClick={() => {
+                    if (!addedItems.includes(product.id)) {
+                      handleAddToCart(product.id);
+                    }
+                    setView('cart'); // 클릭 시 장바구니로 이동
+                  }}
+                >
+                  구매
+                </button>
               </div>
             </div>
           </div>
