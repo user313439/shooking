@@ -16,12 +16,15 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "eslintConfig": {
     "extends": [
       "react-app",
-      "react-app/jest"
+      "react-app/jest",
+      "plugin:storybook/recommended"
     ]
   },
   "browserslist": {
@@ -35,5 +38,16 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "storybook": "^10.2.17",
+    "@storybook/react-webpack5": "^10.2.17",
+    "@storybook/preset-create-react-app": "^10.2.17",
+    "@storybook/addon-a11y": "^10.2.17",
+    "@storybook/addon-docs": "^10.2.17",
+    "@storybook/addon-onboarding": "^10.2.17",
+    "webpack": "^5.105.4",
+    "prop-types": "^15.8.1",
+    "eslint-plugin-storybook": "^10.2.17"
   }
 }
