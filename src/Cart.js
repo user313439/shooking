@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Cart.css';
 
-function Cart({ cartItems, onBack, onCheckout }) {
-  // 1. 수량 조절을 위한 상태 관리 (상품별 수량 저장)
-  const [quantities, setQuantities] = useState(
-    cartItems.reduce((acc, item) => ({ ...acc, [item.id]: 1 }), {})
-  );
-
+function Cart({ cartItems, onUpdateQuantity, onRemove, onCheckout }) {
+  const navigate = useNavigate();
   const [totalPrice, setTotalPrice] = useState(0);
   const [shippingFee, setShippingFee] = useState(3000);
 
@@ -14,26 +11,19 @@ function Cart({ cartItems, onBack, onCheckout }) {
   useEffect(() => {
     const sum = cartItems.reduce((acc, item) => {
       const price = parseInt(item.price.replace(/[^0-9]/g, ''));
-      return acc + price * (quantities[item.id] || 1);
+      return acc + price * (item.quantity || 1);
     }, 0);
 
     setTotalPrice(sum);
     // 10만원 이상 시 배송비 0원
-    setShippingFee(sum >= 100000 ? 0 : 3000);
-  }, [quantities, cartItems]);
-
-  const updateQty = (id, delta) => {
-    setQuantities(prev => ({
-      ...prev,
-      [id]: Math.max(1, (prev[id] || 1) + delta)
-    }));
-  };
+    setShippingFee(sum >= 100000 || sum === 0 ? 0 : 3000);
+  }, [cartItems]);
 
   return (
     <div className="cart-container">
       {/* 상단 헤더 */}
       <header className="cart-header">
-        <button className="back-btn" onClick={onBack}>←</button>
+        <button className="back-btn" onClick={() => navigate(-1)}>←</button>
         <h2>장바구니</h2>
       </header>
       
@@ -41,20 +31,25 @@ function Cart({ cartItems, onBack, onCheckout }) {
 
       {/* 상품 리스트 */}
       <div className="cart-list">
-        {cartItems.map(item => (
-          <div key={item.id} className="cart-item">
-            <img src={item.img} alt={item.brand} className="item-img" />
-            <div className="item-info">
-              <span className="brand">{item.brand}</span>
-              <span className="price">{item.price}</span>
-              <div className="qty-control">
-                <button onClick={() => updateQty(item.id, -1)}>-</button>
-                <span>{quantities[item.id]}</span>
-                <button onClick={() => updateQty(item.id, 1)}>+</button>
+        {cartItems.length === 0 ? (
+          <div style={{ padding: '40px', textAlign: 'center' }}>장바구니가 비어있습니다.</div>
+        ) : (
+          cartItems.map(item => (
+            <div key={item.id} className="cart-item">
+              <img src={item.img} alt={item.brand} className="item-img" />
+              <div className="item-info">
+                <span className="brand">{item.brand}</span>
+                <span className="price">{item.price}</span>
+                <div className="qty-control">
+                  <button onClick={() => onUpdateQuantity(item.id, -1)}>-</button>
+                  <span>{item.quantity}</span>
+                  <button onClick={() => onUpdateQuantity(item.id, 1)}>+</button>
+                  <button onClick={() => onRemove(item.id)} style={{ marginLeft: 'auto', border: 'none', background: 'none', color: 'red', cursor: 'pointer' }}>삭제</button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
 
       {/* 결제 정보 영역 */}
@@ -71,7 +66,14 @@ function Cart({ cartItems, onBack, onCheckout }) {
           <span>총 금액</span>
           <span>{(totalPrice + shippingFee).toLocaleString()}원</span>
         </div>
-        <button className="checkout-btn" onClick={onCheckout}>결제하기</button>
+        <button 
+          className="checkout-btn" 
+          disabled={cartItems.length === 0}
+          onClick={() => onCheckout(navigate)}
+          style={{ opacity: cartItems.length === 0 ? 0.5 : 1 }}
+        >
+          결제하기
+        </button>
       </div>
     </div>
   );

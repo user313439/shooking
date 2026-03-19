@@ -1,148 +1,129 @@
 import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
-import PaymentForm from './PaymentForm';
+import ProductList from './ProductList';
+import ProductDetail from './ProductDetail';
 import Cart from './Cart';
+import PaymentForm from './PaymentForm';
+import Wallet from './Wallet';
+import Success from './Success';
 
+// 1. 데이터는 최상단 부모인 App에서 관리합니다 (데이터 일관성 유지)
 const initialProducts = [
   { id: 1, brand: '브랜드A', desc: '편안하고 착용감이 좋은 신발', price: '35,000원', img: '/images/nike1.jpg' },
-  { id: 2, brand: '브랜드A', desc: '힙한 컬러가 매력적인 신발', price: '25,000원', img: '/images/nike2.jpg' },
-  { id: 3, brand: '브랜드B', desc: '편안하고 착용감이 좋은 신발', price: '35,000원', img: '/images/nike3.jpg' },
-  { id: 4, brand: '브랜드B', desc: '힙한 컬러가 매력적인 신발', price: '35,000원', img: '/images/nike4.jpg' },
-  { id: 5, brand: '브랜드C', desc: '편안하고 착용감이 좋은 신발', price: '35,000원', img: '/images/nike5.jpg' },
-  { id: 6, brand: '브랜드C', desc: '힙한 컬러가 매력적인 신발', price: '35,000원', img: '/images/nike6.jpg' },
+  { id: 2, brand: '브랜드A', desc: '힙한 컬러가 매력적인 신발', price: '35,000원', img: '/images/nike2.jpg' },
+  { id: 3, brand: '브랜드B', desc: '편안하고 착용감이 좋은 신발', price: '35,000원', img: '/images/adidas1.jpg' },
+  { id: 4, brand: '브랜드B', desc: '힙한 컬러가 매력적인 신발', price: '35,000원', img: '/images/adidas2.jpg' },
+  { id: 5, brand: '브랜드C', desc: '편안하고 착용감이 좋은 신발', price: '35,000원', img: '/images/vans1.jpg' },
+  { id: 6, brand: '브랜드C', desc: '힙한 컬러가 매력적인 신발', price: '35,000원', img: '/images/vans2.jpg' },
+  { id: 7, brand: '브랜드A', desc: '편안하고 착용감이 좋은 신발', price: '35,000원', img: '/images/nike3.jpg' },
+  { id: 8, brand: '브랜드A', desc: '힙한 컬러가 매력적인 신발', price: '35,000원', img: '/images/nike4.jpg' },
+  { id: 9, brand: '브랜드B', desc: '편안하고 착용감이 좋은 신발', price: '35,000원', img: '/images/adidas3.jpg' },
+  { id: 10, brand: '브랜드B', desc: '힙한 컬러가 매력적인 신발', price: '35,000원', img: '/images/adidas4.jpg' },
+  { id: 11, brand: '브랜드C', desc: '편안하고 착용감이 좋은 신발', price: '35,000원', img: '/images/vans3.jpg' },
+  { id: 12, brand: '브랜드C', desc: '힙한 컬러가 매력적인 신발', price: '35,000원', img: '/images/vans4.jpg' },
 ];
 
 function App() {
-  const [cartCount, setCartCount] = useState(0);
-  const [addedItems, setAddedItems] = useState([]);
-  const [view, setView] = useState('list'); // list, cart, wallet, addCard
-  const [cards, setCards] = useState([]);
+  const [addedItems, setAddedItems] = useState([]); // [{ id, quantity }]
+  const [cards, setCards] = useState([]); 
 
+  // 장바구니 추가/삭제 로직
   const handleAddToCart = (id) => {
-    if (addedItems.includes(id)) {
-      setCartCount(cartCount - 1);
-      setAddedItems(addedItems.filter(itemId => itemId !== id));
-    } else {
-      setCartCount(cartCount + 1);
-      setAddedItems([...addedItems, id]);
-    }
+    setAddedItems(prev => {
+      const existing = prev.find(item => item.id === id);
+      if (existing) {
+        return prev.filter(item => item.id !== id);
+      } else {
+        return [...prev, { id, quantity: 1 }];
+      }
+    });
   };
 
-  const addCard = (newCard) => {
-    setCards([...cards, newCard]);
-    setView('wallet');
+  const updateQuantity = (id, delta) => {
+    setAddedItems(prev => {
+      const existing = prev.find(item => item.id === id);
+      if (existing) {
+        return prev.map(item => 
+          item.id === id ? { ...item, quantity: Math.max(1, item.quantity + delta) } : item
+        );
+      } else {
+        // 상세페이지에서 담기 전 수량 조절을 시뮬레이션하기 위해선 
+        // ProductDetail 내부 로컬 상태가 필요하므로 App에서는 기존 logic 유지
+        return prev;
+      }
+    });
   };
 
-  // 1. 장바구니 화면 (대소문자 'cart'로 통일)
-  if (view === 'cart') {
-    return (
-      <Cart 
-        cartItems={initialProducts.filter(p => addedItems.includes(p.id))} 
-        onBack={() => setView('list')}
-        onCheckout={() => setView('wallet')} 
-      />
-    );
-  }
+  // 상세페이지용: 특정 수량으로 장바구니 추가/업데이트
+  const handleSetQuantity = (id, quantity) => {
+    setAddedItems(prev => {
+      const existing = prev.find(item => item.id === id);
+      if (existing) {
+        return prev.map(item => item.id === id ? { ...item, quantity } : item);
+      } else {
+        return [...prev, { id, quantity }];
+      }
+    });
+  };
 
-  // 2. 보유 카드 화면
-  if (view === 'wallet') {
-    return (
-      <div className="payment-container">
-        <div className="payment-header">
-          <h3 className="header-title">보유 카드</h3>
-          <button className="close-btn-right" onClick={() => setView('list')}>✕</button>
-        </div>
-        
-        <div className="card-list">
-          {cards.length === 0 && (
-            <p className="wallet-notice">새로운 카드를 등록해주세요.</p>
-          )}
-          {cards.map((card, index) => (
-            <div key={index} className="registered-card-item">
-              <div className="card-preview-ui small-card">
-                <div className="card-chip"></div>
-                <div className="preview-number">{card.displayNumber}</div>
-                <div className="preview-bottom">
-                  <span>{card.userName.toUpperCase()}</span>
-                  <span>{card.expiry}</span>
-                </div>
-              </div>
-              <button className="pay-now-btn" onClick={() => alert('결제가 완료되었습니다!')}>
-                이 카드로 결제하기
-              </button>
-            </div>
-          ))}
-          <div className="add-card-placeholder" onClick={() => setView('addCard')}>
-            <span className="plus-icon">+</span>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const removeFromCart = (id) => {
+    setAddedItems(prev => prev.filter(item => item.id !== id));
+  };
 
-  // 3. 카드 등록 화면
-  if (view === 'addCard') {
-    return (
-      <PaymentForm 
-        onBack={() => setView('wallet')} 
-        onClose={() => setView('list')} 
-        onSave={addCard} 
-      />
-    );
-  }
+  // 결제 완료 시 장바구니 비우기
+  const handlePaymentSuccess = () => {
+    // 성공 페이지로 데이터를 넘기기 위해 addedItems를 비우기 전에 totalCount를 계산해서 넘겨야 할 수도 있음
+    // 여기서는 Wallet에서 Success로 넘길 때 처리하므로 상태만 초기화
+    setAddedItems([]);
+  };
 
-  // 4. 기본 상품 목록 화면
   return (
-    <div className="container">
-      <header className="header">
-        <div className="header-inner">
-          <div 
-            className="cart-icon" 
-            onClick={() => setView('cart')} 
-            style={{ cursor: 'pointer' }}
-          >
-            🛒 {cartCount > 0 && <span className="badge">{cartCount}</span>}
-          </div>
-        </div>
-      </header>
-      
-      <section className="title-section">
-        <h2>신발 상품 목록</h2>
-        <p>현재 {initialProducts.length}개의 상품이 있습니다.</p>
-      </section>
+    <Router>
+      <Routes>
+        <Route path="/" element={
+          <ProductList products={initialProducts} addedItems={addedItems} onAdd={handleAddToCart} />
+        } />
 
-      <div className="product-grid">
-        {initialProducts.map((product) => (
-          <div key={product.id} className="product-card">
-            <div className="img-box"><img src={product.img} alt={product.brand} /></div>
-            <div className="info-box">
-              <span className="brand">{product.brand}</span>
-              <p className="desc">{product.desc}</p>
-              <span className="price">{product.price}</span>
-              <div className="btn-group">
-                <button 
-                  className={`add-btn ${addedItems.includes(product.id) ? 'active' : ''}`} 
-                  onClick={() => handleAddToCart(product.id)}
-                >
-                  {addedItems.includes(product.id) ? '담김!' : '담기'}
-                </button>
-                <button 
-                  className="buy-btn" 
-                  onClick={() => {
-                    if (!addedItems.includes(product.id)) {
-                      handleAddToCart(product.id);
-                    }
-                    setView('cart'); // 클릭 시 장바구니로 이동
-                  }}
-                >
-                  구매
-                </button>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
+        <Route path="/detail/:id" element={
+          <ProductDetail 
+            products={initialProducts} 
+            addedItems={addedItems} 
+            onAdd={handleAddToCart} 
+            onSetQuantity={handleSetQuantity}
+          />
+        } />
+
+        <Route path="/cart" element={
+          <Cart 
+            cartItems={addedItems.map(item => ({
+              ...initialProducts.find(p => p.id === item.id),
+              quantity: item.quantity
+            }))}
+            onUpdateQuantity={updateQuantity}
+            onRemove={removeFromCart}
+            onCheckout={(navigate) => navigate('/wallet')}
+          />
+        } />
+
+        <Route path="/wallet" element={
+          <Wallet 
+            cards={cards} 
+            products={initialProducts} 
+            addedItems={addedItems} 
+            onPaymentSuccess={handlePaymentSuccess} 
+          />
+        } />
+
+        <Route path="/add-card" element={
+          <PaymentForm 
+            onSave={(newCard) => setCards([...cards, newCard])} 
+          />
+        } />
+
+        <Route path="/success" element={<Success />} />
+      </Routes>
+    </Router>
   );
 }
 
